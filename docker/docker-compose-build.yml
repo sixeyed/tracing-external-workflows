@@ -1,0 +1,30 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/api/Dockerfile
+      args:
+        DOTNET_VERSION: ${DOTNET_VERSION}
+        BUILD_COUNTER: ${BUILD_COUNTER:-99}
+        BUILD_ID: ${BUILD_ID:-local}
+        COMMIT_SHA: ${COMMIT_SHA:-local}
+
+  worker:
+    build:
+      context: ..
+      dockerfile: docker/worker/Dockerfile
+      args:
+        DOTNET_VERSION: ${DOTNET_VERSION}
+        BUILD_COUNTER: ${BUILD_COUNTER:-99}
+        BUILD_ID: ${BUILD_ID:-local}
+        COMMIT_SHA: ${COMMIT_SHA:-local}
+
+  load-generator:
+    build:
+      context: ..
+      dockerfile: docker/load-generator/Dockerfile
+      args:
+        DOTNET_VERSION: ${DOTNET_VERSION}
+        BUILD_COUNTER: ${BUILD_COUNTER:-99}
+        BUILD_ID: ${BUILD_ID:-local}
+        COMMIT_SHA: ${COMMIT_SHA:-local}

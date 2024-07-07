@@ -1,0 +1,37 @@
+services:
+
+  api:
+    image: sixeyed/tracing-sample-external-api:202407
+    environment:
+      - Logging__LogLevel__External.Api=Debug
+      - TracingSample__Redis__ConnectionString=redis:6379
+    ports:
+      - 5010:8080
+    networks:
+      - app
+
+  worker:
+    image: sixeyed/tracing-sample-worker:202407
+    environment:
+      - Logging__LogLevel__Tracing.Worker.Actors=Debug
+      - TracingSample__ExternalApi__BaseUrl=http://api:8080
+      - TracingSample__Redis__ConnectionString=redis:6379
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
+    networks:
+      - app
+
+  load-generator:
+    image: sixeyed/tracing-sample-load-generator:202407
+    environment:
+      - Logging__LogLevel__Tracing.WorkflowGenerator=Debug
+      - TracingSample__WorkflowGenerator__WorkflowCount=300
+      - TracingSample__WorkflowGenerator__BatchSize=100
+      - TracingSample__WorkflowGenerator__BatchWaitMinutes=2
+      - TracingSample__Redis__ConnectionString=redis:6379
+    networks:
+      - app
+
+networks:
+  app:
+    name: tracing-sample

@@ -1,0 +1,142 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+      "title": "External.Api",
+      "version": "1.0"
+    },
+    "paths": {
+      "/workflows/{workflowId}": {
+        "get": {
+          "tags": [
+            "Workflow"
+          ],
+          "parameters": [
+            {
+              "name": "workflowId",
+              "in": "path",
+              "required": true,
+              "style": "simple",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Workflow"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Workflow"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Workflow"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "EntityType": {
+          "enum": [
+            "Null",
+            "DataLoader",
+            "Processor",
+            "OutputGenerator"
+          ],
+          "type": "string"
+        },
+        "Status": {
+          "enum": [
+            "Null",
+            "Initializing",
+            "Processing",
+            "Completed",
+            "Failed"
+          ],
+          "type": "string"
+        },
+        "Workflow": {
+          "type": "object",
+          "properties": {
+            "workflowId": {
+              "type": "string",
+              "nullable": true
+            },
+            "workflowStatus": {
+              "$ref": "#/components/schemas/Status"
+            },
+            "workflowStartTime": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "workflowEndTime": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "isComplete": {
+              "type": "boolean",
+              "readOnly": true
+            },
+            "workflowErrorMessage": {
+              "type": "string",
+              "nullable": true
+            },
+            "workflowEntities": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/components/schemas/WorkflowEntity"
+              },
+              "nullable": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "WorkflowEntity": {
+          "type": "object",
+          "properties": {
+            "entityType": {
+              "$ref": "#/components/schemas/EntityType"
+            },
+            "entityId": {
+              "type": "string",
+              "nullable": true
+            },
+            "entityStatus": {
+              "$ref": "#/components/schemas/Status"
+            },
+            "entityErrorMessage": {
+              "type": "string",
+              "nullable": true
+            },
+            "entityStartTime": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "entityEndTime": {
+              "type": "string",
+              "format": "date-time",
+              "nullable": true
+            },
+            "isComplete": {
+              "type": "boolean",
+              "readOnly": true
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    }
+  }

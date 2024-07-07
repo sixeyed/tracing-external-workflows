@@ -1,0 +1,36 @@
+services:
+
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - 6379:6379
+    networks:
+      - app
+
+  tempo:
+    image: grafana/tempo:2.5.0
+    command: [ "-config.file=/etc/tempo.yaml", "-distributor.log-received-spans.enabled" ]
+    volumes:
+      - ./config/tempo/tempo.yaml:/etc/tempo.yaml
+    ports:
+      - "4317:4317"  # otlp grpc
+    networks:
+      - app
+
+  grafana:
+    image: grafana/grafana:11.0.0
+    volumes:
+      - ./config/grafana/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor traceQLStreaming metricsSummary
+    ports:
+      - "3000:3000"
+    networks:
+      - app
+
+networks:
+  app:
+    name: tracing-sample

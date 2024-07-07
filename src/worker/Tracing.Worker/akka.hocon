@@ -1,0 +1,14 @@
+akka {
+  stdout-loglevel = WARNING
+  loglevel = DEBUG
+  log-config-on-start = off
+  actor {
+    debug {
+      receive = off
+      autoreceive = on
+      lifecycle = off
+      event-stream = off
+      unhandled = on
+    }
+  }
+}

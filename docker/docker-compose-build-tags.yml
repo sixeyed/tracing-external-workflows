@@ -1,0 +1,9 @@
+services:
+  api:
+    image: sixeyed/tracing-sample-external-api:202407-${DOCKER_BUILD_OS}-${DOCKER_BUILD_CPU}
+
+  worker:
+    image: sixeyed/tracing-sample-worker:202407-${DOCKER_BUILD_OS}-${DOCKER_BUILD_CPU}
+
+  load-generator:
+    image: sixeyed/tracing-sample-load-generator:202407-${DOCKER_BUILD_OS}-${DOCKER_BUILD_CPU}
