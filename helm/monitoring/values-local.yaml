@@ -1,0 +1,51 @@
+environment: local
+
+grafana:
+  grafana.ini:
+    server:
+      domain: "localhost"
+      root_url: "http://localhost:8030/"
+    auth:
+      disable_login_form: true
+    auth.basic:
+      enabled: true
+    analytics:
+      reporting_enabled: false
+      check_for_updates: false
+      check_for_plugin_updates: false
+    log:
+      level: info
+  service:
+    type: LoadBalancer
+    port: 8030
+
+tempo:
+  config: |
+      multitenancy_enabled: false
+      usage_report:
+        reporting_enabled: false
+      compactor:
+        compaction:
+          block_retention: 24h
+      distributor:
+        receivers:
+          otlp:
+            protocols:
+              grpc:
+                endpoint: 0.0.0.0:4317
+      server:
+        http_listen_address: "0.0.0.0"
+        http_listen_port: 3100
+      storage:
+        trace:
+          backend: local
+          local:
+            path: /var/tempo/traces
+          wal:
+            path: /var/tempo/wal
+  persistence:
+    storageClassName: hostpath
+    size: 4Gi
+  tempo:
+    extraArgs: 
+      distributor.log-received-spans.enabled:

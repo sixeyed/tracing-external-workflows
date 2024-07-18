@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-worker
+spec:
+  replicas: {{ .Values.worker.replicaCount }}
+  selector:
+    matchLabels:
+      app: tracing-sample
+      component: worker
+  template:
+    metadata:
+      annotations:
+        checksum/config-env: {{ include (print $.Template.BasePath "/config-env.yaml") . | sha256sum }}
+      labels:
+        app: tracing-sample
+        component: worker
+    spec:
+      containers:
+        - name: app
+          image: {{ .Values.image.registry }}/{{ .Values.worker.image.repo }}:{{ .Values.worker.image.tag }}
+          env:
+            - name: Logging__LogLevel__Tracing.Worker.Actors
+              value: {{ .Values.worker.logLevel }}            
+            - name: TracingSample__ExternalApi__BaseUrl
+              value: http://{{ .Release.Name }}-api.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.api.service.port }}            
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://monitoring-tempo.monitoring.svc.cluster.local:4317
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config-env

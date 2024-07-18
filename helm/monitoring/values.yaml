@@ -1,0 +1,45 @@
+environment: placeholder
+
+grafana:
+  env: 
+    GF_FEATURE_TOGGLES_ENABLE: traceqlEditor metricsSummary
+  envFromSecret: "{{ .Release.Name }}-grafana-auth"
+  datasources: 
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Tempo
+          type: tempo
+          access: proxy
+          orgId: 1
+          url: "http://{{ .Release.Name }}-tempo.{{ .Release.Namespace }}.svc.cluster.local:3100"
+          basicAuth: false
+          isDefault: true
+          version: 1
+          editable: false
+          apiVersion: 1
+          uid: tempo
+          jsonData:
+            httpMethod: GET
+  dashboardsConfigMaps:
+    sample: "{{ .Release.Name }}-grafana-dashboards"
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'sample'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: true
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/sample
+  persistence:
+    enabled: false
+
+tempo:   
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce

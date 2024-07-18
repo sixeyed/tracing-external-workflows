@@ -1,0 +1,13 @@
+redis:
+  global:
+    storageClass: hostpath
+  master:
+    service:
+      type: LoadBalancer
+      ports:
+        redis: 8379
+
+api:
+  service:
+    type: LoadBalancer
+    port: 8085

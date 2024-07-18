@@ -1,0 +1,70 @@
+environment: azure
+
+grafana:
+  azure:
+    ad:
+      clientId: client-id
+      tenantId: tenant-id
+    ingress:
+      domain: www.mydomain.com
+      sslCertificateName:  mydomain-com
+  grafana.ini:
+    server:
+      domain: "{{.Values.azure.ingress.domain}}"
+      root_url: "https://{{.Values.azure.ingress.domain}}{{.Values.ingress.path}}"
+      serve_from_sub_path: true
+    auth:
+      disable_login_form: true
+    auth.basic:
+      enabled: false
+    auth.azuread:
+      name: Azure AD
+      enabled: true
+      allow_sign_up: true
+      auto_login: true
+      auth_url: "https://login.microsoftonline.com/{{.Values.azure.ad.tenantId}}/oauth2/v2.0/authorize"
+      token_url: "https://login.microsoftonline.com/{{.Values.azure.ad.tenantId}}/oauth2/v2.0/token"
+      allowed_organizations: "{{.Values.azure.ad.tenantId}}"
+    analytics:
+      reporting_enabled: false
+      check_for_updates: false
+      check_for_plugin_updates: false
+  ingress:
+    enabled: true
+    hosts:
+      - "{{.Values.azure.ingress.domain}}"
+    path: /grafana
+  podAnnotations:
+    checksum-auth-azuread: placeholder
+  service:
+    port: 3000
+
+# AzureAD auth in Grafana:
+# https://grafana.com/docs/grafana/latest/setup-grafana/configure-security/configure-authentication/azuread/#configure-azure-ad-authentication-client-using-the-grafana-configuration-file
+
+tempo:
+  config: |
+      multitenancy_enabled: false
+      usage_report:
+        reporting_enabled: false
+      compactor:
+        compaction:
+          block_retention: 336h
+      distributor:
+        receivers:
+          otlp:
+            protocols:
+              grpc:
+                endpoint: 0.0.0.0:4317
+      server:
+        http_listen_port: 3100
+      storage:
+        trace:
+          backend: local
+          local:
+            path: /var/tempo/traces
+          wal:
+            path: /var/tempo/wal            
+  persistence:
+    storageClassName: managed-csi
+    size: 32Gi

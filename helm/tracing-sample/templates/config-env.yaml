@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config-env
+data:
+  Logging__LogLevel__Default: Information
+  TracingSample__Redis__ConnectionString: "{{ .Release.Name }}-redis-master.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.redis.master.service.ports.redis }},abortConnect=false"

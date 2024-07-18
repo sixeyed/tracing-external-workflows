@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-api
+spec:
+  replicas: {{ .Values.api.replicaCount }}
+  selector:
+    matchLabels:
+      app: tracing-sample
+      component: api
+  template:
+    metadata:
+      annotations:
+        checksum/config-env: {{ include (print $.Template.BasePath "/config-env.yaml") . | sha256sum }}
+      labels:
+        app: tracing-sample
+        component: api
+    spec:
+      containers:
+        - name: app
+          image: {{ .Values.image.registry }}/{{ .Values.api.image.repo }}:{{ .Values.api.image.tag }}
+          env:
+            - name: Logging__LogLevel__External.Api
+              value: {{ .Values.api.logLevel }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config-env
+          ports:
+          - name: http
+            containerPort: 8080

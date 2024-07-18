@@ -1,0 +1,42 @@
+redis:
+  auth:
+    enabled: false
+
+  architecture: standalone
+
+  master:
+    persistence:
+      size: 1Gi
+    resources:
+      requests:
+        cpu: '0.125'
+        memory: 125M
+      limits:
+        cpu: '0.125'
+        memory: 125M
+
+  replica:
+    resources:
+      requests:
+        cpu: '0.1'
+        memory: 100M
+      limits:
+        cpu: '0.125'
+        memory: 125M
+
+image:
+  registry: docker.io
+
+api:
+  replicaCount: 2
+  image:
+    repo: sixeyed/tracing-sample-external-api
+    tag: 202407
+  logLevel: Debug
+    
+worker:
+  replicaCount: 1
+  image:
+    repo: sixeyed/tracing-sample-worker
+    tag: 202407
+  logLevel: Debug

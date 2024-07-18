@@ -1,0 +1,6 @@
+redis:
+  global:
+    storageClass: managed-premium
+  master:
+    persistence:
+      size: 1Gi

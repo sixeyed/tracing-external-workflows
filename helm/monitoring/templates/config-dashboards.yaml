@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-grafana-dashboards
+data:
+  workflows.json: |-
+{{ $.Files.Get "config/dashboards/workflows.json" | indent 4 }}

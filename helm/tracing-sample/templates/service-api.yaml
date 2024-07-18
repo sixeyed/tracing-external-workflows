@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-api
+  labels:
+    app: tracing-sample
+    component: api
+spec:
+  ports:
+    - name: http
+      port: {{ .Values.api.service.port }}
+      targetPort: http
+  selector:
+    app: tracing-sample
+    component: api
+  type: {{ .Values.api.service.type }}
